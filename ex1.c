@@ -64,21 +64,15 @@ struct node *Push(struct node *headRef, int data)
         return headRef;
 }
 /*COUNT TH OCCURENCE*/
-int countd;
-int count1(struct node *x,int y)
-{
-	if(x!=NULL){
-		if(y==x->d)
-			countd++;
-		count1(x->nxt,y);
-	}
-	return countd;
-}
 int count(struct node *x,int d)
 {
-	int ac=count1(x,d);
-	countd=0;
-	return ac;
+	int countd=0;
+	while(x!=NULL){
+                if(d==x->d)
+                        countd++;
+                x=x->nxt;
+        }
+	return countd;
 }
 /*GET NTH*/
 int g=1;
@@ -266,7 +260,7 @@ void append(struct node *x,struct node *y)
 void frontandbacksplit(struct node *h,struct node **front,struct node **back)
 {
 	int l=len(h)/2+len(h)%2;
-	if(l>1)
+	if(len(h)>=2)
 	{
 		int c=1;
 		*front=h;
@@ -278,6 +272,9 @@ void frontandbacksplit(struct node *h,struct node **front,struct node **back)
 		h->nxt=NULL;
 	
 	}
+/*	else if(l==1){
+		*frontNULL;
+		*back=NULL;}printlist(*back);}*/
 }
 /*REMOVE DUPLICATE*/
 void removedups(struct node *h)
@@ -324,9 +321,9 @@ struct node *shufflemerge(struct node *a,struct node *b)
 {
 	struct node *ret=malloc(sizeof(struct node));
 	struct node *retst=ret;
-	if(len(a)>=len(b)){
-		while(a!=NULL){
-			ret->d=a->d;
+		while(a!=NULL||b!=NULL){
+			if(a!=NULL)
+				ret->d=a->d;
 			if(b!=NULL){
 				ret->nxt=malloc(sizeof(struct node));
                         	ret=ret->nxt;
@@ -336,32 +333,13 @@ struct node *shufflemerge(struct node *a,struct node *b)
 				a=a->nxt;
 			if(b!=NULL)
 				b=b->nxt;
-			if(a!=NULL||b!=NULL){
+			if(a!=NULL){
                                 ret->nxt=malloc(sizeof(struct node));
                                 ret=ret->nxt;
 				ret->nxt=NULL;
 				}
 
 		}
-	}
-	else 
-	while(b!=NULL){
-                        ret->d=b->d; 
-                        if(a!=NULL){
-				ret->nxt=malloc(sizeof(struct node));
-                        	ret=ret->nxt;
-                                ret->d=a->d;
-                        }
-                        if(a!=NULL)
-                                a=a->nxt;
-                        if(b!=NULL)
-                                b=b->nxt;
-			if(a!=NULL||b!=NULL){
-                                ret->nxt=malloc(sizeof(struct node));
-                                ret=ret->nxt;
-				ret->nxt=NULL;
-			}
-                }
 	return retst;
 }
 /*SORTED MERGE*/
@@ -372,20 +350,106 @@ struct node *sortedmerge(struct node *a,struct node *b)
 	return ret;
 }
 /*MERGE SORT*/
-void mergesort(struct node *h)
+void MergeSort(struct node** headRef) {
+	struct node* head = *headRef;
+	struct node* a;
+	struct node* b;
+	if ((head == NULL) || (head->nxt == NULL)) {
+		return;
+	}
+	frontandbacksplit(head, &a, &b);
+	MergeSort(&a); 
+	MergeSort(&b);
+	*headRef= sortedmerge(a, b);
+}
+/*SORTED INTERSECT*/
+struct node *sortedintersect(struct node *a,struct node *b)
 {
-		
+	struct node *ret=malloc(sizeof(struct node));
+	struct node *retst=ret;
+	while(a!=NULL){
+		ret->d=a->d;
+		a=a->nxt;
+		if(a!=NULL||b!=NULL){
+			ret->nxt=malloc(sizeof(struct node));
+			ret=ret->nxt;
+		}
+	}
+	while(b!=NULL){
+                ret->d=b->d;
+                b=b->nxt;
+                if(b!=NULL){
+                        ret->nxt=malloc(sizeof(struct node));
+                        ret=ret->nxt;
+                }
+        }
+	return retst;
+}
+/*REVERSE*/
+void reverse(struct node **h)
+{
+	struct node *cop=*h;
+	int st[len(cop)],i=0;
+	while(cop!=NULL){
+		st[i]=cop->d;
+		i++;
+		cop=cop->nxt;
+	}
+	i--;
+	cop=*h;	
+	while(i>=0){
+		cop->d=st[i];
+		cop=cop->nxt;
+		i--;
+	}
+}
+/*RECURSIVE REVERSE*/
+struct node *rev1(struct node *cop,struct node *c)
+{
+	struct node *h;
+	if(cop->nxt==NULL){
+		cop->nxt=c;
+		return cop;
+	}
+	h=rev1(cop->nxt,cop);
+	cop->nxt=c;
+	return h;
+}
+void recreverse(struct node **h)
+{
+	struct node *cop=*h;
+	*h=rev1(cop,NULL);
+}
+/*RECURSIVE REVERSE2*/
+void recursivereverse(struct node **h)
+{
+	struct node *cop=*h;
+	struct node *next=cop->nxt;
+	if(cop==NULL) return;
+	if(next==NULL){
+		*h=cop;
+		return;
+	}
+	recursivereverse(&(cop->nxt));
+	next->nxt=cop;
+	*h=cop->nxt;
+	cop->nxt=NULL;
+	return;
+}
 main()
 {
 	struct node *head1=NULL;
 	head=BuildWithLocalRef();
-	int i=6;
-	while(i<13)
+	int i=5;
+	while(i<12)
 	{
 		head1=built123(head1,i);
 		i=i+1;
 	}
-	printlist(sortedmerge(head1,head));
+//	printlist(head1);
+//	recursivereverse(&head1);
+//	printf("\n");
+	printf("%d",count(head1,7));
 //	struct node *aref=NULL;
 //	struct node *bref=NULL;
 //	printlist(head);
@@ -393,16 +457,17 @@ main()
 //	alternatingsplit(head,&aref,&bref);
 //	head=NULL;
 //	printlist(head1);
-//	head=shufflemerge(head1,head);
+//	head=shufflemerge(head,head1);
 //	printlist(aref);
 //	printf("\n");
-//	printlist(bref);
+//	printlist(head1);
 //	printf("\n");
-//	movenode(&head,&head1);
+//	movenode(&(head->nxt->nxt),&(head1->nxt->nxt));
 //	struct node *front=NULL;
 //	struct node *back=NULL;
 //	frontandbacksplit(head1,&front,&back);
 //	append(head,head1);
+//	mergesort(&head);
 //	printlist(head1);
 //	insertnth(&head,0,11);
 //	insertsort(&head1);
@@ -426,9 +491,9 @@ main()
 //	printf("getnth=%d\n",getnth(head,2));
 //	printf("count=%d\n",count(head,3));
 //	printlist(bref);
-//	printlist(aref);
 //	printlist(head1);
+//	printlist(front);
 //	printf("\n");
 //	printlist(head);
-	printf("len=%d\n",len(head));
+//	printf("len=%d\n",len(head));
 }
