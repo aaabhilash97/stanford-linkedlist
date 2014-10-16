@@ -75,26 +75,17 @@ int count(struct node *x,int d)
 	return countd;
 }
 /*GET NTH*/
-int g=1;
-int getnth1(struct node *x,int p)
-{
-	int nth;
-	if(x!=NULL){		
-		if(g!=p){
-			g++;
-			nth=getnth1(x->nxt,p);
-		}
-		else 
-			nth=x->d;
-	return nth;
-	
-	}
-}
 int getnth(struct node *x,int p)
 {
-	int nth=getnth1(x,p);
-	g=0;
-	return nth;
+	int g=0;
+	while(x!=NULL){
+                if(g!=p){
+                        g++;
+                        x=x->nxt;
+                }
+                else
+                        return x->d;
+        }
 }
 /*DELETE LIST*/
 struct node *deletelist(struct node **x)
@@ -449,7 +440,7 @@ main()
 //	printlist(head1);
 //	recursivereverse(&head1);
 //	printf("\n");
-	printf("%d",count(head1,7));
+	printf("%d",getnth(head1,4));
 //	struct node *aref=NULL;
 //	struct node *bref=NULL;
 //	printlist(head);
